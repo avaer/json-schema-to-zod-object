@@ -1,4 +1,6 @@
-# Json-Schema-to-Zod
+# Json-Schema-to-Zod-Object
+
+> This is a fork of `json-schema-to-zod` that returns `zod` types instead of a string.
 
 [![NPM Version](https://img.shields.io/npm/v/json-schema-to-zod.svg)](https://npmjs.org/package/json-schema-to-zod)
 [![NPM Downloads](https://img.shields.io/npm/dw/json-schema-to-zod.svg)](https://npmjs.org/package/json-schema-to-zod)
