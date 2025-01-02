@@ -1,3 +1,4 @@
+import { z, ZodTypeAny } from "zod";
 import { parseAnyOf } from "./parseAnyOf.js";
 import { parseBoolean } from "./parseBoolean.js";
 import { parseDefault } from "./parseDefault.js";
@@ -26,16 +27,16 @@ export const parseSchema = (
   schema: JsonSchema,
   refs: Refs = { seen: new Map(), path: [] },
   blockMeta?: boolean,
-): string => {
-  if (typeof schema !== "object") return schema ? "z.any()" : "z.never()";
+): ZodTypeAny => {
+  if (typeof schema !== "object") return schema ? z.any() : z.never();
 
-  if (refs.parserOverride) {
-    const custom = refs.parserOverride(schema, refs);
+  // if (refs.parserOverride) {
+  //   const custom = refs.parserOverride(schema, refs);
 
-    if (typeof custom === "string") {
-      return custom;
-    }
-  }
+  //   if (typeof custom === "string") {
+  //     return custom;
+  //   }
+  // }
 
   let seen = refs.seen.get(schema);
 
@@ -45,7 +46,7 @@ export const parseSchema = (
     }
 
     if (refs.depth === undefined || seen.n >= refs.depth) {
-      return "z.any()";
+      return z.any();
     }
 
     seen.n += 1;
@@ -72,27 +73,24 @@ export const parseSchema = (
   return parsed;
 };
 
-const addDescribes = (schema: JsonSchemaObject, parsed: string): string => {
+const addDescribes = (schema: JsonSchemaObject, parsed: ZodTypeAny): ZodTypeAny => {
   if (schema.description) {
-    parsed += `.describe(${JSON.stringify(schema.description)})`;
+    return parsed.describe(schema.description);
   }
-
   return parsed;
 };
 
-const addDefaults = (schema: JsonSchemaObject, parsed: string): string => {
+const addDefaults = (schema: JsonSchemaObject, parsed: ZodTypeAny): ZodTypeAny => {
   if (schema.default !== undefined) {
-    parsed += `.default(${JSON.stringify(schema.default)})`;
+    return parsed.default(schema.default);
   }
-
   return parsed;
 };
 
-const addAnnotations = (schema: JsonSchemaObject, parsed: string): string => {
+const addAnnotations = (schema: JsonSchemaObject, parsed: ZodTypeAny): ZodTypeAny => {
   if (schema.readOnly) {
-    parsed += ".readonly()";
+    return parsed.readonly();
   }
-
   return parsed;
 };
 

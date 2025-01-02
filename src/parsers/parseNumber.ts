@@ -1,76 +1,46 @@
+import { z, ZodTypeAny } from "zod";
 import { JsonSchemaObject } from "../Types.js";
-import { withMessage } from "../utils/withMessage.js";
 
 export const parseNumber = (
   schema: JsonSchemaObject & { type: "number" | "integer" },
-) => {
-  let r = "z.number()";
+): ZodTypeAny => {
+  let zodNumber = z.number();
 
   if (schema.type === "integer") {
-    r += withMessage(schema, "type", () => [".int(", ")"]);
-  } else {
-    r += withMessage(schema, "format", ({ value }) => {
-      if (value === "int64") {
-        return [".int(", ")"];
-      }
-    });
+    zodNumber = zodNumber.int();
+  } else if (schema.format === "int64") {
+    zodNumber = zodNumber.int();
   }
 
-  r += withMessage(schema, "multipleOf", ({ value, json }) => {
-    if (value === 1) {
-      if (r.startsWith("z.number().int(")) {
-        return;
+  if (schema.multipleOf !== undefined) {
+    if (schema.multipleOf === 1) {
+      if (!zodNumber.isInt) {
+        zodNumber = zodNumber.int();
       }
-
-      return [".int(", ")"];
+    } else {
+      zodNumber = zodNumber.multipleOf(schema.multipleOf);
     }
-
-    return [`.multipleOf(${json}`, ", ", ")"];
-  });
+  }
 
   if (typeof schema.minimum === "number") {
     if (schema.exclusiveMinimum === true) {
-      r += withMessage(schema, "minimum", ({ json }) => [
-        `.gt(${json}`,
-        ", ",
-        ")",
-      ]);
+      zodNumber = zodNumber.gt(schema.minimum);
     } else {
-      r += withMessage(schema, "minimum", ({ json }) => [
-        `.gte(${json}`,
-        ", ",
-        ")",
-      ]);
+      zodNumber = zodNumber.gte(schema.minimum);
     }
   } else if (typeof schema.exclusiveMinimum === "number") {
-    r += withMessage(schema, "exclusiveMinimum", ({ json }) => [
-      `.gt(${json}`,
-      ", ",
-      ")",
-    ]);
+    zodNumber = zodNumber.gt(schema.exclusiveMinimum);
   }
 
   if (typeof schema.maximum === "number") {
     if (schema.exclusiveMaximum === true) {
-      r += withMessage(schema, "maximum", ({ json }) => [
-        `.lt(${json}`,
-        ", ",
-        ")",
-      ]);
+      zodNumber = zodNumber.lt(schema.maximum);
     } else {
-      r += withMessage(schema, "maximum", ({ json }) => [
-        `.lte(${json}`,
-        ", ",
-        ")",
-      ]);
+      zodNumber = zodNumber.lte(schema.maximum);
     }
   } else if (typeof schema.exclusiveMaximum === "number") {
-    r += withMessage(schema, "exclusiveMaximum", ({ json }) => [
-      `.lt(${json}`,
-      ", ",
-      ")",
-    ]);
+    zodNumber = zodNumber.lt(schema.exclusiveMaximum);
   }
 
-  return r;
+  return zodNumber;
 };

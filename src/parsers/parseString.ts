@@ -1,83 +1,77 @@
 import { JsonSchemaObject } from "../Types.js";
-import { withMessage } from "../utils/withMessage.js";
-import { parseSchema } from "./parseSchema.js";
+import { z, ZodTypeAny } from "zod";
 
-export const parseString = (schema: JsonSchemaObject & { type: "string" }) => {
-  let r = "z.string()";
+export const parseString = (schema: JsonSchemaObject & { type: "string" }): ZodTypeAny => {
+  let output = z.string();
 
-  r += withMessage(schema, "format", ({ value }) => {
-    switch (value) {
+  if (schema.format) {
+    switch (schema.format) {
       case "email":
-        return [".email(", ")"];
+        output = output.email();
+        break;
       case "ip":
-        return [".ip(", ")"];
+        output = output.ip();
+        break;
       case "ipv4":
-        return ['.ip({ version: "v4"', ", message: ", " })"];
+        output = output.ip({ version: "v4" });
+        break;
       case "ipv6":
-        return ['.ip({ version: "v6"', ", message: ", " })"];
+        output = output.ip({ version: "v6" });
+        break;
       case "uri":
-        return [".url(", ")"];
+        output = output.url();
+        break;
       case "uuid":
-        return [".uuid(", ")"];
+        output = output.uuid();
+        break;
       case "date-time":
-        return [".datetime({ offset: true", ", message: ", " })"];
+        output = output.datetime({ offset: true });
+        break;
       case "time":
-        return [".time(", ")"];
+        output = output.time();
+        break;
       case "date":
-        return [".date(", ")"];
+        output = output.date();
+        break;
       case "binary":
-        return [".base64(", ")"];
+        output = output.base64();
+        break;
       case "duration":
-        return [".duration(", ")"];
+        output = output.duration();
+        break;
     }
-  });
-
-  r += withMessage(schema, "pattern", ({ json }) => [
-    `.regex(new RegExp(${json})`,
-    ", ",
-    ")",
-  ]);
-
-  r += withMessage(schema, "minLength", ({ json }) => [
-    `.min(${json}`,
-    ", ",
-    ")",
-  ]);
-
-  r += withMessage(schema, "maxLength", ({ json }) => [
-    `.max(${json}`,
-    ", ",
-    ")",
-  ]);
-
-  r += withMessage(schema, "contentEncoding", ({ value }) => {
-    if (value === "base64") {
-      return [".base64(", ")"];
-    }
-  });
-
-  const contentMediaType = withMessage(schema, "contentMediaType", ({ value }) => {
-    if (value === "application/json") {
-      return [
-        ".transform((str, ctx) => { try { return JSON.parse(str); } catch (err) { ctx.addIssue({ code: \"custom\", message: \"Invalid JSON\" }); }}",
-        ", ",
-        ")"
-      ]
-    }
-  });
-
-  if(contentMediaType != ""){
-    r += contentMediaType;
-    r += withMessage(schema, "contentSchema", ({ value })=>{
-      if (value && value instanceof Object){
-        return [
-          `.pipe(${parseSchema(value)}`,
-          ", ",
-          ")"
-        ]
-      }
-    });
   }
 
-  return r;
+  if (schema.pattern) {
+    output = output.regex(new RegExp(schema.pattern));
+  }
+
+  if (schema.minLength !== undefined) {
+    output = output.min(schema.minLength);
+  }
+
+  if (schema.maxLength !== undefined) {
+    output = output.max(schema.maxLength);
+  }
+
+  if (schema.contentEncoding === "base64") {
+    output = output.base64();
+  }
+
+  // if (schema.contentMediaType === "application/json") {
+  //   output = output.transform((str, ctx) => {
+  //     try {
+  //       return JSON.parse(str);
+  //     } catch (err) {
+  //       ctx.addIssue({ code: "custom", message: "Invalid JSON" });
+  //       return z.NEVER;
+  //     }
+  //   });
+
+  //   if (schema.contentSchema && schema.contentSchema instanceof Object) {
+  //     output = output.pipe(parseSchema(schema.contentSchema));
+  //   }
+  // }
+
+  return output;
 };

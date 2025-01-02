@@ -1,3 +1,5 @@
+import { ZodTypeAny } from 'zod';
+
 export type Serializable =
   | { [key: string]: Serializable }
   | Serializable[]
@@ -57,7 +59,7 @@ export type JsonSchemaObject = {
   errorMessage?: { [key: string]: string | undefined };
 } & { [key: string]: any };
 
-export type ParserSelector = (schema: JsonSchemaObject, refs: Refs) => string;
+export type ParserSelector = (schema: JsonSchemaObject, refs: Refs) => ZodTypeAny;
 export type ParserOverride = (
   schema: JsonSchemaObject,
   refs: Refs,
@@ -77,5 +79,5 @@ export type Options = {
 
 export type Refs = Options & {
   path: (string | number)[];
-  seen: Map<object | boolean, { n: number; r: string | undefined }>;
+  seen: Map<object | boolean, { n: number; r: ZodTypeAny | undefined }>;
 };

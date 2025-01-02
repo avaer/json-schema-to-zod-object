@@ -1,35 +1,35 @@
+import { z, ZodTypeAny } from "zod";
 import { JsonSchemaObject, Refs } from "../Types.js";
-import { withMessage } from "../utils/withMessage.js";
 import { parseSchema } from "./parseSchema.js";
 
 export const parseArray = (
   schema: JsonSchemaObject & { type: "array" },
   refs: Refs,
-) => {
+): ZodTypeAny => {
   if (Array.isArray(schema.items)) {
-    return `z.tuple([${schema.items.map((v, i) =>
-      parseSchema(v, { ...refs, path: [...refs.path, "items", i] }),
-    )}])`;
+    return z.tuple(
+      schema.items.map((v, i) =>
+        parseSchema(v, { ...refs, path: [...refs.path, "items", i] })
+      ) as any
+    );
   }
 
-  let r = !schema.items
-    ? "z.array(z.any())"
-    : `z.array(${parseSchema(schema.items, {
-        ...refs,
-        path: [...refs.path, "items"],
-      })})`;
+  let array = !schema.items
+    ? z.array(z.any())
+    : z.array(
+        parseSchema(schema.items, {
+          ...refs,
+          path: [...refs.path, "items"],
+        })
+      );
 
-  r += withMessage(schema, "minItems", ({ json }) => [
-    `.min(${json}`,
-    ", ",
-    ")",
-  ]);
+  if (schema.minItems !== undefined) {
+    array = array.min(schema.minItems, `Array must contain at least ${schema.minItems} element(s)`);
+  }
 
-  r += withMessage(schema, "maxItems", ({ json }) => [
-    `.max(${json}`,
-    ", ",
-    ")",
-  ]);
+  if (schema.maxItems !== undefined) {
+    array = array.max(schema.maxItems, `Array must contain at most ${schema.maxItems} element(s)`);
+  }
 
-  return r;
+  return array;
 };

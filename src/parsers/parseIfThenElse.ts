@@ -1,3 +1,4 @@
+import { z, ZodTypeAny } from "zod";
 import { JsonSchemaObject, JsonSchema, Refs } from "../Types.js";
 import { parseSchema } from "./parseSchema.js";
 
@@ -8,7 +9,7 @@ export const parseIfThenElse = (
     else: JsonSchema;
   },
   refs: Refs,
-): string => {
+): ZodTypeAny => {
   const $if = parseSchema(schema.if, { ...refs, path: [...refs.path, "if"] });
   const $then = parseSchema(schema.then, {
     ...refs,
@@ -18,12 +19,12 @@ export const parseIfThenElse = (
     ...refs,
     path: [...refs.path, "else"],
   });
-  return `z.union([${$then}, ${$else}]).superRefine((value,ctx) => {
-  const result = ${$if}.safeParse(value).success
-    ? ${$then}.safeParse(value)
-    : ${$else}.safeParse(value);
-  if (!result.success) {
-    result.error.errors.forEach((error) => ctx.addIssue(error))
-  }
-})`;
+  return z.union([$then, $else]).superRefine((value, ctx) => {
+    const result = $if.safeParse(value).success
+      ? $then.safeParse(value)
+      : $else.safeParse(value);
+    if (!result.success) {
+      result.error.errors.forEach((error) => ctx.addIssue(error));
+    }
+  });
 };

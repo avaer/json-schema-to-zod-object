@@ -1,37 +1,29 @@
 import { JsonSchemaObject } from "../Types.js";
+import { ZodTypeAny } from "zod";
 
-type Opener = string;
-type MessagePrefix = string;
-type Closer = string;
-
-type Builder = [Opener, Closer] | [Opener, MessagePrefix, Closer];
+type MethodArgs = unknown[];
 
 export function withMessage(
-  schema: JsonSchemaObject,
-  key: string,
-  get: (props: { value: unknown; json: string }) => Builder | void,
+  schema: ZodTypeAny,
+  methodName: string,
+  getArgs: (props: { value: unknown; json: string }) => MethodArgs | void,
 ) {
-  const value = schema[key as keyof typeof schema];
-
-  let r = "";
+  const value = schema[methodName as keyof typeof schema];
 
   if (value !== undefined) {
-    const got = get({ value, json: JSON.stringify(value) });
+    const args = getArgs({ value, json: JSON.stringify(value) });
 
-    if (got) {
-      const opener = got[0];
-      const prefix = got.length === 3 ? got[1] : "";
-      const closer = got.length === 3 ? got[2] : got[1];
+    if (args) {
+      let method = (schema as any)[methodName];
+      
+      // if (schema.errorMessage?.[methodName] !== undefined) {
+      //   // Add error message as last argument if provided
+      //   args.push(schema.errorMessage[methodName]);
+      // }
 
-      r += opener;
-
-      if (schema.errorMessage?.[key] !== undefined) {
-        r += prefix + JSON.stringify(schema.errorMessage[key]);
-      }
-      r;
-      r += closer;
+      return method.apply(schema, args);
     }
   }
 
-  return r;
+  return schema;
 }
