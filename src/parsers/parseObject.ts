@@ -26,9 +26,9 @@ export function parseObject(
           path: [...refs.path, "properties", key],
         });
 
-        if (refs.withJsdocs && typeof propSchema === "object") {
-          zodType = addJsdocs(propSchema, zodType);
-        }
+        // if (refs.withJsdocs && typeof propSchema === "object") {
+        //   zodType = addJsdocs(propSchema, zodType);
+        // }
 
         const hasDefault = 
           typeof propSchema === "object" && propSchema.default !== undefined;
