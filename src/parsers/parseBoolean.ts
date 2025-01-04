@@ -1,5 +1,5 @@
 import { z, ZodTypeAny } from "zod";
-import { JsonSchemaObject } from "../Types.js";
+import { JsonSchemaObject } from "../Types";
 
 export const parseBoolean = (
   _schema: JsonSchemaObject & { type: "boolean" },

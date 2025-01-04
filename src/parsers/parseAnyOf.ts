@@ -1,6 +1,6 @@
 import { z, ZodTypeAny } from "zod";
-import { JsonSchemaObject, JsonSchema, Refs } from "../Types.js";
-import { parseSchema } from "./parseSchema.js";
+import { JsonSchemaObject, JsonSchema, Refs } from "../Types";
+import { parseSchema } from "./parseSchema";
 
 export const parseAnyOf = (
   schema: JsonSchemaObject & { anyOf: JsonSchema[] },

@@ -1,7 +1,7 @@
 import { z, ZodTypeAny } from "zod";
-import { parseSchema } from "./parseSchema.js";
-import { half } from "../utils/half.js";
-import { JsonSchemaObject, JsonSchema, Refs } from "../Types.js";
+import { parseSchema } from "./parseSchema";
+import { half } from "../utils/half";
+import { JsonSchemaObject, JsonSchema, Refs } from "../Types";
 
 const originalIndex = Symbol("Original index");
 

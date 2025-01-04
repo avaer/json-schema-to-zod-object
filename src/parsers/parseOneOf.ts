@@ -1,5 +1,5 @@
-import { JsonSchemaObject, JsonSchema, Refs } from "../Types.js";
-import { parseSchema } from "./parseSchema.js";
+import { JsonSchemaObject, JsonSchema, Refs } from "../Types";
+import { parseSchema } from "./parseSchema";
 import { z, ZodTypeAny } from "zod";
 
 export const parseOneOf = (

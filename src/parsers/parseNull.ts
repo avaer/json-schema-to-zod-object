@@ -1,5 +1,5 @@
 import { z, ZodTypeAny } from "zod";
-import { JsonSchemaObject } from "../Types.js";
+import { JsonSchemaObject } from "../Types";
 
 export const parseNull = (_schema: JsonSchemaObject & { type: "null" }): ZodTypeAny => {
   return z.null();

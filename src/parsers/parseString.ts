@@ -1,4 +1,4 @@
-import { JsonSchemaObject } from "../Types.js";
+import { JsonSchemaObject } from "../Types";
 import { z, ZodTypeAny } from "zod";
 
 export const parseString = (schema: JsonSchemaObject & { type: "string" }): ZodTypeAny => {

@@ -1,10 +1,10 @@
 import { z, ZodTypeAny } from "zod";
-import { JsonSchemaObject, Refs } from "../Types.js";
-import { parseAnyOf } from "./parseAnyOf.js";
-import { parseOneOf } from "./parseOneOf.js";
-import { its, parseSchema } from "./parseSchema.js";
-import { parseAllOf } from "./parseAllOf.js";
-import { addJsdocs } from "../utils/jsdocs.js";
+import { JsonSchemaObject, Refs } from "../Types";
+import { parseAnyOf } from "./parseAnyOf";
+import { parseOneOf } from "./parseOneOf";
+import { its, parseSchema } from "./parseSchema";
+import { parseAllOf } from "./parseAllOf";
+import { addJsdocs } from "../utils/jsdocs";
 
 export function parseObject(
   objectSchema: JsonSchemaObject & { type: "object" },

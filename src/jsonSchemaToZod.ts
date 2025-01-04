@@ -1,7 +1,7 @@
 import { ZodTypeAny } from "zod";
-import { Options, JsonSchema } from "./Types.js";
-import { parseSchema } from "./parsers/parseSchema.js";
-import { expandJsdocs } from "./utils/jsdocs.js";
+import { Options, JsonSchema } from "./Types";
+import { parseSchema } from "./parsers/parseSchema";
+// import { expandJsdocs } from "./utils/jsdocs";
 
 export const jsonSchemaToZod = (
   schema: JsonSchema,

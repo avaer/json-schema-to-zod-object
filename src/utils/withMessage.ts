@@ -1,4 +1,4 @@
-import { JsonSchemaObject } from "../Types.js";
+// import { JsonSchemaObject } from "../Types";
 import { ZodTypeAny } from "zod";
 
 type MethodArgs = unknown[];

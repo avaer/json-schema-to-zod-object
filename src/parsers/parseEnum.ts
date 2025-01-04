@@ -1,5 +1,5 @@
 import { z, ZodTypeAny } from "zod";
-import { JsonSchemaObject, Serializable } from "../Types.js";
+import { JsonSchemaObject, Serializable } from "../Types";
 
 export const parseEnum = (
   schema: JsonSchemaObject & { enum: Serializable[] },
