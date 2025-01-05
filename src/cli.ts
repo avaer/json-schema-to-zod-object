@@ -66,7 +66,7 @@ async function main() {
 
   if (args.output) {
     mkdirSync(dirname(args.output), { recursive: true });
-    writeFileSync(args.output, zodSchema);
+    writeFileSync(args.output, JSON.stringify(zodSchema, null, 2));
   } else {
     console.log(zodSchema);
   }
