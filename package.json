@@ -3,24 +3,11 @@
   "version": "2.6.5",
   "description": "Converts JSON schema objects or files into Zod schemas",
   "types": "./dist/types/index.d.ts",
-  "bin": "./dist/cjs/cli.js",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "exports": {
-    "import": {
-      "types": "./dist/types/index.d.ts",
-      "default": "./dist/esm/index.js"
-    },
-    "require": {
-      "types": "./dist/types/index.d.ts",
-      "default": "./dist/cjs/index.js"
-    }
-  },
+  "main": "./dist/esm/index.js",
   "scripts": {
     "build:types": "tsc -p tsconfig.types.json",
-    "build:cjs": "tsc -p tsconfig.cjs.json && node postcjs.js",
     "build:esm": "tsc -p tsconfig.esm.json && node postesm.js",
-    "build": "rimraf ./dist && npm run build:types && npm run build:cjs && npm run build:esm",
+    "build": "rimraf ./dist && npm run build:types && npm run build:esm",
     "dry": "npm run build && npm pub --dry-run",
     "dev": "tsx watch test/index.ts"
   },
